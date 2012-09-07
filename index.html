@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>倒计时</title>
+<style type="text/css">
+	*{margin:0;padding:0;font-family:"微软雅黑";}
+	
+
+	.last-time{height:42px;margin:100px;position:relative;}
+	.last-time .up span{position:absolute;left:17px;bottom:-10px;z-index:999;color:#ccc;font-size:12px;}
+	.last-time img{display:inline-block;position:relative;width:23px;vertical-align:bottom;z-index:998;}
+	.last-time .back{display:block;}
+	.last-time .front{position:absolute;top:0px;}
+	.last-time .front .down img{height:26px;vertical-align:top;}
+</style>
+</head>
+
+<body>
+
+<div class="last-time">
+	<div class="back">
+    	<div class="up">
+        	<img src="images/Up/Left/0.png" /><img src="images/Up/Right/0.png" />
+            <img src="images/Up/Left/0.png" /><img src="images/Up/Right/0.png" />
+			<img src="images/Up/Left/0.png" /><img src="images/Up/Right/0.png" />
+            <img src="images/Up/Left/0.png" /><img src="images/Up/Right/0.png" />
+            <span>天</span>
+            <span style="left:69px;">时</span>
+            <span style="left:119px;">分</span>
+            <span style="left:170px;">秒</span>
+        </div>
+        <div class="down">
+        	<img src="images/Down/Left/0.png" /><img src="images/Down/Right/0.png" />
+            <img src="images/Down/Left/0.png" /><img src="images/Down/Right/0.png" />
+			<img src="images/Down/Left/0.png" /><img src="images/Down/Right/0.png" />
+            <img src="images/Down/Left/0.png" /><img src="images/Down/Right/0.png" />
+        </div>
+    </div>
+    
+    <div class="front">
+    	<div class="up">
+        	<img src="images/Up/Left/0.png" /><img src="images/Up/Right/0.png" />
+            <img src="images/Up/Left/0.png" /><img src="images/Up/Right/0.png" />
+			<img src="images/Up/Left/0.png" /><img src="images/Up/Right/0.png" />
+            <img src="images/Up/Left/0.png" /><img src="images/Up/Right/0.png" />
+        </div>
+        <div class="down">
+        	<img src="images/Down/Left/0.png" /><img src="images/Down/Right/0.png" />
+            <img src="images/Down/Left/0.png" /><img src="images/Down/Right/0.png" />
+			<img src="images/Down/Left/0.png" /><img src="images/Down/Right/0.png" />
+            <img src="images/Down/Left/0.png" /><img src="images/Down/Right/0.png" />
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="jquery.1.8.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	(function($){
+		$.fn.lastTime = function(config){
+			var config = $.extend({},$.fn.lastTime.defaults,config),
+				$this = $(this),
+				$back = $('div.back',$this),
+				$front = $('div.front',$this),
+				that,timNum=config.day+config.hour+config.minute+config.seconds,
+				h1=2,m1=s1=5,h2=m2=d1=d2=0,i=10,tim;
+				alert(timNum);
+			
+			that = {
+				init:function(){
+					var that = {
+						setTimes:function(){
+							var $up_back = $('div.up>img',$back),
+								$up_front = $('div.up>img',$front),
+								$down_back = $('div.down>img',$back),
+								$down_front = $('div.down>img',$front);	
+								
+								for(var i = 0; i < timNum.length; i++){
+									set(i,timNum[i]);
+								}
+								
+								function set(i,num){
+									var point = ( i % 2 != 0 ? 'Right' : 'Left' );
+									
+									$up_back.eq(i).attr('src','images/Up/'+ point +'/'+ num +'.png');
+									$up_front.eq(i).attr('src','images/Up/'+ point +'/'+ num +'.png');
+									
+									$down_back.eq(i).attr('src','images/Down/'+ point +'/'+ num +'.png');
+									$down_front.eq(i).attr('src','images/Down/'+ point +'/'+ num +'.png');
+								}
+						}
+					};
+					
+					that.setTimes();
+					s1 = timNum.substring(6,7);
+					h1 = timNum.substring(2,3);
+					h2 = timNum.substring(3,4);
+					m1 = timNum.substring(4,5); 
+					m2 = timNum.substring(5,6);
+					d1 = timNum.substring(0,1);
+					d2 = timNum.substring(1,2);
+					i = timNum.substring(timNum.length-1);
+				},
+				update:function(){
+					i < 0 ? i = 10 : i;
+					
+					if(d2 <= 0 && s1 <= 0 && i == 10){clearInterval(tim);return;}
+		
+					if(i==10){i--;s1--;
+						if(s1 < 0){s1 = 5;m2--;
+							if(m2 < 0) {m2 = 9;m1--;
+								if(m1 < 0){m1 = 5;h2--;
+									if(h2 < 0){h2 = 3;h1--;
+										if(h1 < 0){h1 = 2;d2--;
+											if(d2 < 0){d2 = 9;d1--;}
+											change(0,1,d1,d2)
+										}
+									}
+								}
+								change(2,3,h1,h2);
+							}
+							change(4,5,m1,m2);
+						}
+						change(6,7,s1,i);
+					}else{
+						change(6,7,s1,i);
+					}
+
+					function change(index1,index2,n1,n2){
+						
+						frontFile(
+							$front.find('div.up>img:eq('+index1+')'),$front.find('div.down>img:eq('+index1+')'),n1,
+							'images/Up/Left/','images/Down/Left/',
+							function(){backFiel($back.find('div.up>img:eq('+index1+')'),$back.find('div.down>img:eq('+ index1 +')'),n1,'images/Up/Left/','images/Down/Left/')}
+						);
+						frontFile(
+							$front.find('div.up>img:eq('+index2+')'),$front.find('div.down>img:eq('+index2+')'),n2,
+							'images/Up/Right/','images/Down/Right/',
+							function(){backFiel($back.find('div.up>img:eq('+index2+')'),$back.find('div.down>img:eq('+index2+')'),n2,'images/Up/Right/','images/Down/Right/')}
+						);	
+					}
+					
+					function frontFile(up,down,changeNum,pathUp,pathDown,call){
+						up.stop(true).animate({height:0},400,function(){
+							
+							$(this)	.css({visibility:'hidden'})
+									.attr('src',pathUp+changeNum+'.png')
+									.css({height:26,visibility:'visible'});
+							
+							down.css({visibility:'visible',height:0})
+								.attr('src',pathDown+changeNum+'.png')
+								.animate({height:26},400,function(){
+									$(this).css({visibility:'hidden'});
+									call != null ? call() : call;
+								});
+						});
+					}
+					
+					function backFiel(up,down,changeNum,pathUp,pathDown){
+						up.attr('src',pathUp+changeNum+'.png');
+						down.attr('src',pathDown+changeNum+'.png');
+					}
+				} 
+			};
+			
+			that.init();
+
+			tim = setInterval(function(){
+				i--;
+				that.update();
+			},1000);
+		};
+		
+		$.fn.lastTime.defaults = {
+			day:'23',
+			hour:'23',
+			minute:'00',
+			seconds:'01'
+		};
+	})(jQuery);
+	
+	$('div.last-time').lastTime();
+});
+</script>
+</body>
+</html>
